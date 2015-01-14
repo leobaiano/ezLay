@@ -1,11 +1,18 @@
 <?php
 
+/**
+ * ezLay Template Handler
+ * @author Guilherme Augusto Madaleno <guimadaleno@me.com>
+ * @version 1.0
+ */
+
 class ezLay
 {
 
 	private $template;
 	private $blocks;
 	private $models;
+	private $selected_block;
 
 	public function __construct ()
 	{
@@ -13,16 +20,20 @@ class ezLay
 		$this -> models = new stdClass();
 	}
 
-	/* Open template file (bool) */
+	/**
+	 * Open template file
+	 * @param string $file 
+	 * @return bool
+	 */
 
 	public function open ($file)
 	{
 
 		if (!is_file($file))
-			$this -> fail ("File not found");
+			trigger_error("File was not found", E_USER_ERROR);
 
 		if (isset($this -> template) and $this -> template and isset($this -> blocks) and count($this -> blocks))
-			$this -> fail ("Cannot open file {$file}. Please finish content first.");
+			trigger_error("Cannot open file {$file}. Please call finish_content() first.", E_USER_ERROR);
 
 		$this -> template = file_get_contents($file);
 
@@ -30,13 +41,17 @@ class ezLay
 
 	}
 
-	/* Get region content (string) */
+	/**
+	 * Get block content
+	 * @param string $block
+	 * @return string
+	 */
 
 	public function get_block_contents ($block)
 	{
 
 		if (!$this -> template)
-			$this -> fail ("No template opened");
+			trigger_error("No template has been loaded on ezLay", E_USER_ERROR);
 
 		preg_match("/<{$block}>((\s|.)*)<\/{$block}>/U", $this -> template, $output);
 
@@ -45,33 +60,51 @@ class ezLay
 
 	}
 
-	/* Select block region to be used by push_block (bool) */
+	/**
+	 * Select block to be used by the ezLay
+	 * @param string $block
+	 * @return bool
+	 */
 
 	public function select_block ($block)
 	{
 
 		if (!$this -> template)
-			$this -> fail ("No template opened");
+			trigger_error("No template has been loaded on ezLay", E_USER_ERROR);
 
 		preg_match("/<{$block}>((\s|.)*)<\/{$block}>/U", $this -> template, $output);
 
 		if (isset($output[1])):
+
+			$this -> selected_block = $block;
+
+			$this -> blocks -> $block = Array();
 			$this -> models -> $block = $output[1];
+
 			return true;
+
 		endif;
 
 	}
 
-	/* Inject content to block region (bool) */
+	/**
+	 * Inject content into block
+	 * @param array $keys
+	 * @param string $block
+	 * @return bool
+	 */
 
-	public function push_block ($block, $keys)
+	public function push_block ($keys, $block = "")
 	{
 
 		if (!$this -> template)
-			$this -> fail ("No template opened");
+			trigger_error("No template has been loaded on ezLay", E_USER_ERROR);
 
-		if (!$this -> blocks)
-			$this -> fail ("Block not selected");
+		if (!$this -> selected_block)
+			trigger_error("No block has been loaded on ezLay", E_USER_ERROR);
+
+		if (!$block)
+			$block = $this -> selected_block;
 
 		if (isset($this -> models -> $block)):
 
@@ -81,9 +114,7 @@ class ezLay
 				$keysReady["{{$key}}"] = $value;
 
 			if (isset($this -> blocks -> $block))
-				$this -> blocks -> $block .= str_replace(array_keys($keysReady), $keysReady, $this -> models -> $block);
-			else
-				$this -> blocks -> $block = str_replace(array_keys($keysReady), $keysReady, $this -> models -> $block);
+				array_push($this -> blocks -> $block, str_replace(array_keys($keysReady), $keysReady, $this -> models -> $block));
 
 			return true;
 
@@ -91,13 +122,17 @@ class ezLay
 
 	}
 
-	/* Inject content to layout (bool) */
+	/**
+	 * Inject content into template file
+	 * @param array $keys
+	 * @return bool
+	 */
 
 	public function push_content ($keys)
 	{
 
 		if (!$this -> template)
-			$this -> fail ("No template opened");
+			trigger_error("No template has been loaded on ezLay", E_USER_ERROR);
 
 		$keysReady = Array();
 
@@ -110,52 +145,89 @@ class ezLay
 
 	}
 
-	/* Finish operations (string) */
+	/**
+	 * Finish process and return the mounted template
+	 * @return string
+	 */
 
 	public function finish_content ()
 	{
 
 		if (!$this -> template)
-			$this -> fail ("No template opened");
+			trigger_error("No template has been loaded on ezLay", E_USER_ERROR);
 
 		if (!$this -> blocks)
-			$this -> fail ("Block not selected");
+			trigger_error("No block has been loaded on ezLay", E_USER_ERROR);
+
 
 		foreach ($this -> blocks as $block => $contents):
-			$this -> template = preg_replace("/<{$block}>((\s|.)*)<\/{$block}>/U", "<{$block}>" . $this -> models -> $block . "</{$block}><{$block}_model>" . $this -> models -> $block . "</{$block}_model>", $this -> template);
-			$this -> template = preg_replace("/<{$block}_model>((\s|.)*)<\/{$block}_model>/U", $contents, $this -> template);
+
+			$contents = array_reverse($contents);
+
+			foreach ($contents as $content):
+
+				$this -> template = preg_replace("/<{$block}>((\s|.)*)<\/{$block}>/U", "<{$block}>" . $this -> models -> $block . "</{$block}><{$block}_model>" . $this -> models -> $block . "</{$block}_model>", $this -> template);
+				$this -> template = preg_replace("/<{$block}_model>((\s|.)*)<\/{$block}_model>/U", $content, $this -> template);
+
+			endforeach;
+
 			$this -> remove_block ($block);
+
 		endforeach;
 
 		$template = $this -> template;
 
 		unset($this -> template);
 
+		$this -> blocks = new stdClass();
+		$this -> models = new stdClass();
+
 		return $template;
 
 	}
 
-	/* To remove block regions (bool) */
+	/**
+	 * Removes a block from another one
+	 * @param string $blockName
+	 * @return bool
+	 */
 
-	public function remove_block ($block)
+	public function remove_from_block ($blockName = "")
 	{
 
 		if (!$this -> template)
-			$this -> fail ("No template opened");
+			trigger_error("No template has been loaded on ezLay", E_USER_ERROR);
 
-		$this -> template = preg_replace("/<{$block}>((\s|.)*)<\/{$block}>/U", " ", $this -> template);
+		if (!$block)
+			$block = $this -> selected_block;-
+
+		$last = end(array_keys($this -> blocks -> $block));
+
+		$this -> blocks -> {$block}{$last} = preg_replace("/<{$blockName}>((\s|.)*)<\/{$blockName}>/U", " ", $this -> blocks -> {$block}{$last});
 
 		return true;
 
 	}
 
-	/* Critical failures */
+	/**
+	 * Removes a block from template
+	 * @param string $block
+	 * @return bool
+	 */
 
-	private function fail ($message)
+	public function remove_block ($block = "")
 	{
-		$protocol = (isset($_SERVER['SERVER_PROTOCOL']) ? $_SERVER['SERVER_PROTOCOL'] : 'HTTP/1.0');
-		header("{$protocol} 503 Service Unavailable");
-		die("ezLay error: {$message}");
+
+		if (!$this -> template)
+			trigger_error("No template has been loaded on ezLay", E_USER_ERROR);
+
+		if (!$block)
+			$block = $this -> selected_block;
+
+		$this -> template = preg_replace("/<{$block}>((\s|.)*)<\/{$block}>/U", " ", $this -> template);
+
+		return true;
+
 	}
 
 }
