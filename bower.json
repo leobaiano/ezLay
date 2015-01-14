@@ -1,0 +1,12 @@
+{
+	"name": "ezlay",
+	"author": "Guilherme Augusto Madaleno",
+	"version": "1.0.0",
+	"main": "ezlay",
+	"ignore":
+	[
+		"**/.*",
+		"*.md",
+		"bower.json"
+	]
+}
