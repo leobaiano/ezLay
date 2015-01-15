@@ -42,6 +42,17 @@ class ezLay
 	}
 
 	/**
+	 * Check if ezLay has been started
+	 * @return string
+	 */
+
+	public function is_opened ()
+	{
+		if (isset($this -> file) and isset($this -> template))
+			return true;
+	}
+
+	/**
 	 * Get block content
 	 * @param string $block
 	 * @return string
