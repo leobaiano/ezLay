@@ -9,6 +9,7 @@
 class ezLay
 {
 
+	private $file;
 	private $template;
 	private $blocks;
 	private $models;
@@ -30,10 +31,12 @@ class ezLay
 	{
 
 		if (!is_file($file))
-			trigger_error("File was not found", E_USER_ERROR);
+			trigger_error("File '{$file}' was not found", E_USER_ERROR);
 
 		if (isset($this -> template) and $this -> template and isset($this -> blocks) and count($this -> blocks))
-			trigger_error("Cannot open file {$file}. Please call finish_content() first.", E_USER_ERROR);
+			trigger_error("Cannot open file '{$file}'. Please call finish_content() first.", E_USER_ERROR);
+
+		$this -> file = $file;
 
 		$this -> template = file_get_contents($file);
 
