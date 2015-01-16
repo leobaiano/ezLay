@@ -189,7 +189,7 @@ class ezLay
 
 		endforeach;
 
-		$template = $this -> template = preg_replace("/{(.*?)}/", "", $this -> template);;
+		$template = $this -> template = preg_replace("/{(.*?)}/", "", $this -> template);
 
 		unset($this -> template);
 
