@@ -131,7 +131,7 @@ In this example, inside **demo-advanced.tpl**, we have **two blocks** that will 
 ```html
 <h1>Hello world!</h1>
 <loopthis>
-	<p>Hello, I'm {name}. I live in {city} <nonus>(US)</nonus></p>
+	<p>Hello, I'm {name}. My email is {email} and  I live in {city} <nonus>(US)</nonus></p>
 </loopthis>
 <h2>Bla bla bla something</h2>
 <loopthistoo>
@@ -229,9 +229,24 @@ $layout -> push_content (array
 	"datetime" => date("Y-m-d H:i:s")
 ));
 ```
-And again, print the final result. That's it.
+And again, print the final result.
 ```php
 echo $layout -> finish_content ();
+```
+
+Here it is:
+```html
+<h1>Hello world!</h1>
+<loopthis>
+	<p>Hello, I'm Guilherme. My email is guimadaleno@me.com and I live in Belo Horizonte</p>
+	<p>Hello, I'm John Appleseed. My email is john@applesee.com and I live in New York (US)</p>
+	<p>Hello, I'm Chuck Norris. My email is chuck@internet.com and I live in Nowhere</p>
+</loopthis>
+<h2>Bla bla bla something</h2>
+<loopthistoo>
+	<p>The hex code of Red is #bf0000</p>
+	<p>The hex code of Orange is #ffcc00</p>
+</loopthistoo>
 ```
 ---
 
