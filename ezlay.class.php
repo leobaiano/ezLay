@@ -125,7 +125,7 @@ class ezLay
 			$keysReady = array();
 
 			foreach ($keys as $key => $value)
-				$keysReady["{{$key}}"] = $value;
+				$keysReady["::$key::"] = $value;
 
 			if (isset($this -> blocks -> $block))
 				array_push($this -> blocks -> $block, str_replace(array_keys($keysReady), $keysReady, $this -> models -> $block));
@@ -151,7 +151,7 @@ class ezLay
 		$keysReady = Array();
 
 		foreach ($keys as $key => $value)
-			$keysReady["{{$key}}"] = $value;
+			$keysReady["::{$key}::"] = $value;
 
 		$this -> template = str_replace(array_keys($keysReady), $keysReady, $this -> template);
 
@@ -189,7 +189,7 @@ class ezLay
 
 		endforeach;
 
-		$template = $this -> template = preg_replace("/{(.*?)}/", "", $this -> template);
+		$template = $this -> template = preg_replace("/::(.*?)::/", "", $this -> template);
 
 		unset($this -> template);
 

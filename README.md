@@ -40,8 +40,8 @@ $layout -> open ("demo-basic.tpl");
 
 Inside the **demo-basic.tpl** we have:
 ```html
-<p>Today is {currentdate}</p>
-<p>Your IP is {currentip}</p>
+<p>Today is ::currentdate::</p>
+<p>Your IP is ::currentip::</p>
 ```
 
 Now we are going to add the content dynamically.
@@ -75,7 +75,7 @@ $layout -> open ("demo-intermediate.tpl");
 Inside the **demo-intermediate.tpl**, we have something we call '*block'*, that's actually a custom tag with some code.
 ```html
 <loopexample>
-	<p>The hex code of {color_name} is {hex_code}</p>
+	<p>The hex code of ::color_name:: is ::hex_code::</p>
 </loopexample>
 ```
 
@@ -131,11 +131,11 @@ In this example, inside **demo-advanced.tpl**, we have **two blocks** that will 
 ```html
 <h1>Hello world!</h1>
 <loopthis>
-	<p>Hello, I'm {name}. My email is {email} and  I live in {city} <nonus>(US)</nonus></p>
+	<p>Hello, I'm ::name::. My email is ::email:: and  I live in ::city:: <nonus>(US)</nonus></p>
 </loopthis>
 <h2>Bla bla bla something</h2>
 <loopthistoo>
-	<p>The hex code of {color_name} is {hex_code}</p>
+	<p>The hex code of ::color_name:: is ::hex_code::</p>
 </loopthistoo>
 <hidethis>HUEHUEHUEHUE</hidethis>
 ```
@@ -219,7 +219,7 @@ $layout -> open ("demo-advanced-extra.tpl");
 
 The file **demo-advanced-extra.tpl** has this:
 ```html
-Current datetime: {datetime}
+Current datetime: ::datetime::
 ```
 
 Let's replace some keys...
