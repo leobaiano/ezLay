@@ -14,6 +14,7 @@ class ezLay
 	private $blocks;
 	private $models;
 	private $selected_block;
+	private $current_block_key;
 
 	public function __construct ()
 	{
@@ -130,9 +131,12 @@ class ezLay
 			if (isset($this -> blocks -> $block))
 				array_push($this -> blocks -> $block, str_replace(array_keys($keysReady), $keysReady, $this -> models -> $block));
 
+			$this -> current_block_key = (count((array)$this -> blocks -> results) - 1);
+
 			return true;
 
 		endif;
+
 
 	}
 
@@ -202,22 +206,21 @@ class ezLay
 
 	/**
 	 * Removes a block from another one
-	 * @param string $blockName
+	 * @param string $blockToRemove
+	 * @param string $blockSelected
 	 * @return bool
 	 */
 
-	public function remove_from_block ($blockName = "")
+	public function remove_from_block ($blockToRemove = "", $blockSelected = "")
 	{
 
 		if (!$this -> template)
 			trigger_error("No template has been loaded on ezLay", E_USER_ERROR);
 
-		if (!$block)
-			$block = $this -> selected_block;-
+		if (empty($blockSelected))
+			$blockSelected = $this -> selected_block;
 
-		$last = end(array_keys($this -> blocks -> $block));
-
-		$this -> blocks -> {$block}{$last} = preg_replace("/<{$blockName}>((\s|.)*)<\/{$blockName}>/U", " ", $this -> blocks -> {$block}{$last});
+		$this -> blocks -> {$blockSelected}{$this -> current_block_key} = preg_replace("/<{$blockToRemove}>((\s|.)*)<\/{$blockToRemove}>/U", " ", $this -> blocks -> {$blockSelected}{$this -> current_block_key});
 
 		return true;
 
