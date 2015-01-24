@@ -131,7 +131,7 @@ class ezLay
 			if (isset($this -> blocks -> $block))
 				array_push($this -> blocks -> $block, str_replace(array_keys($keysReady), $keysReady, $this -> models -> $block));
 
-			$this -> current_block_key = (count((array)$this -> blocks -> results) - 1);
+			$this -> current_block_key = (isset($this -> blocks -> results) and count($this -> blocks -> results)) ? (count((array)$this -> blocks -> results) - 1) : 0;
 
 			return true;
 
