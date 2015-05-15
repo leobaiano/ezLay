@@ -65,7 +65,7 @@ class ezLay
 	public function get_block_contents ($block)
 	{
 
-		if (!$this -> template)
+		if (!isset($this -> template))
 			trigger_error("No template has been loaded on ezLay", E_USER_ERROR);
 
 		preg_match("/<{$block}>((\s|.)*)<\/{$block}>/U", $this -> template, $output);
@@ -84,7 +84,7 @@ class ezLay
 	public function select_block ($block)
 	{
 
-		if (!$this -> template)
+		if (!isset($this -> template))
 			trigger_error("No template has been loaded on ezLay", E_USER_ERROR);
 
 		preg_match("/<{$block}>((\s|.)*)<\/{$block}>/U", $this -> template, $output);
@@ -112,10 +112,10 @@ class ezLay
 	public function push_block ($keys, $block = "")
 	{
 
-		if (!$this -> template)
+		if (!isset($this -> template))
 			trigger_error("No template has been loaded on ezLay", E_USER_ERROR);
 
-		if (!$this -> selected_block)
+		if (!isset($this -> blocks))
 			trigger_error("No block has been loaded on ezLay", E_USER_ERROR);
 
 		if (!$block)
@@ -149,7 +149,7 @@ class ezLay
 	public function push_content ($keys)
 	{
 
-		if (!$this -> template)
+		if (!isset($this -> template))
 			trigger_error("No template has been loaded on ezLay", E_USER_ERROR);
 
 		$keysReady = Array();
@@ -171,10 +171,10 @@ class ezLay
 	public function finish_content ()
 	{
 
-		if (!$this -> template)
+		if (!isset($this -> template))
 			trigger_error("No template has been loaded on ezLay", E_USER_ERROR);
 
-		if (!$this -> blocks)
+		if (!isset($this -> blocks))
 			trigger_error("No block has been loaded on ezLay", E_USER_ERROR);
 
 
@@ -214,7 +214,7 @@ class ezLay
 	public function remove_from_block ($blockToRemove = "", $blockSelected = "")
 	{
 
-		if (!$this -> template)
+		if (!isset($this -> template))
 			trigger_error("No template has been loaded on ezLay", E_USER_ERROR);
 
 		if (empty($blockSelected))
@@ -235,7 +235,7 @@ class ezLay
 	public function remove_block ($block = "")
 	{
 
-		if (!$this -> template)
+		if (!isset($this -> template))
 			trigger_error("No template has been loaded on ezLay", E_USER_ERROR);
 
 		if (!$block)
