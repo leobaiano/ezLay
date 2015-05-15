@@ -16,6 +16,9 @@ class ezLay
 	private $selected_block;
 	private $current_block_key;
 
+	public $tag_open = "<";
+	public $tag_close = ">";
+
 	public function __construct ()
 	{
 		$this -> blocks = new stdClass();
@@ -68,7 +71,7 @@ class ezLay
 		if (!isset($this -> template))
 			trigger_error("No template has been loaded on ezLay", E_USER_ERROR);
 
-		preg_match("/<{$block}>((\s|.)*)<\/{$block}>/U", $this -> template, $output);
+		preg_match("/{$this -> tag_open}{$block}{$this -> tag_close}((\s|.)*){$this -> tag_open}\/{$block}{$this -> tag_close}/U", $this -> template, $output);
 
 		if (isset($output[1]))
 			return $output[1];
@@ -87,7 +90,7 @@ class ezLay
 		if (!isset($this -> template))
 			trigger_error("No template has been loaded on ezLay", E_USER_ERROR);
 
-		preg_match("/<{$block}>((\s|.)*)<\/{$block}>/U", $this -> template, $output);
+		preg_match("/{$this -> tag_open}{$block}{$this -> tag_close}((\s|.)*){$this -> tag_open}\/{$block}{$this -> tag_close}/U", $this -> template, $output);
 
 		if (isset($output[1])):
 
@@ -184,8 +187,8 @@ class ezLay
 
 			foreach ($contents as $content):
 
-				$this -> template = preg_replace("/<{$block}>((\s|.)*)<\/{$block}>/U", "<{$block}>" . $this -> models -> $block . "</{$block}><{$block}_model>" . $this -> models -> $block . "</{$block}_model>", $this -> template);
-				$this -> template = preg_replace("/<{$block}_model>((\s|.)*)<\/{$block}_model>/U", $content, $this -> template);
+				$this -> template = preg_replace("/{$this -> tag_open}{$block}{$this -> tag_close}((\s|.)*){$this -> tag_open}\/{$block}{$this -> tag_close}/U", "{$this -> tag_open}{$block}{$this -> tag_close}" . $this -> models -> $block . "{$this -> tag_open}/{$block}{$this -> tag_close}{$this -> tag_open}{$block}_model{$this -> tag_close}" . $this -> models -> $block . "{$this -> tag_open}/{$block}_model{$this -> tag_close}", $this -> template);
+				$this -> template = preg_replace("/{$this -> tag_open}{$block}_model{$this -> tag_close}((\s|.)*){$this -> tag_open}\/{$block}_model{$this -> tag_close}/U", $content, $this -> template);
 
 			endforeach;
 
@@ -205,6 +208,18 @@ class ezLay
 	}
 
 	/**
+	 * Set layout open and close tagd
+	 * @param string $tag_open
+	 * @param string $tag_close
+	 */
+
+	public function set_tags ($tag_open, $tag_close)
+	{
+		$this -> tag_open = $tag_open;
+		$this -> tag_close = $tag_close;
+	}
+
+	/**
 	 * Removes a block from another one
 	 * @param string $blockToRemove
 	 * @param string $blockSelected
@@ -220,7 +235,7 @@ class ezLay
 		if (empty($blockSelected))
 			$blockSelected = $this -> selected_block;
 
-		$this -> blocks -> {$blockSelected}{$this -> current_block_key} = preg_replace("/<{$blockToRemove}>((\s|.)*)<\/{$blockToRemove}>/U", " ", $this -> blocks -> {$blockSelected}{$this -> current_block_key});
+		$this -> blocks -> {$blockSelected}{$this -> current_block_key} = preg_replace("/{$this -> tag_open}{$blockToRemove}{$this -> tag_close}((\s|.)*){$this -> tag_open}\/{$blockToRemove}{$this -> tag_close}/U", " ", $this -> blocks -> {$blockSelected}{$this -> current_block_key});
 
 		return true;
 
@@ -241,7 +256,7 @@ class ezLay
 		if (!$block)
 			$block = $this -> selected_block;
 
-		$this -> template = preg_replace("/<{$block}>((\s|.)*)<\/{$block}>/U", " ", $this -> template);
+		$this -> template = preg_replace("/{$this -> tag_open}{$block}{$this -> tag_close}((\s|.)*){$this -> tag_open}\/{$block}{$this -> tag_close}/U", " ", $this -> template);
 
 		return true;
 
